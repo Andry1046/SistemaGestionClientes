@@ -1,0 +1,14 @@
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\bin\Debug\net8.0\SistemaDeGestionClientes.exe
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\bin\Debug\net8.0\SistemaDeGestionClientes.deps.json
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\bin\Debug\net8.0\SistemaDeGestionClientes.runtimeconfig.json
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\bin\Debug\net8.0\SistemaDeGestionClientes.dll
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\bin\Debug\net8.0\SistemaDeGestionClientes.pdb
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\SistemaDeGestionClientes.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\SistemaDeGestionClientes.AssemblyInfoInputs.cache
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\SistemaDeGestionClientes.AssemblyInfo.cs
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\SistemaDeGestionClientes.csproj.CoreCompileInputs.cache
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\SistemaDeGestionClientes.dll
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\refint\SistemaDeGestionClientes.dll
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\SistemaDeGestionClientes.pdb
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\SistemaDeGestionClientes.genruntimeconfig.cache
+C:\Users\user\source\repos\SistemaDeGestionClientes\SistemaDeGestionClientes\obj\Debug\net8.0\ref\SistemaDeGestionClientes.dll
