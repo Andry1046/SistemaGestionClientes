@@ -7,14 +7,17 @@ namespace SistemaDeGestionClientes
         static void Main(string[] args)
         {
             var Listar = new Cliente();
+            var ListEmpleado = new Empleado();
+
             int menu = 0;
 
-            while (menu != 3)
+            while (menu != 5)
             {   
-                System.Console.WriteLine("------------------Sistema de Clientes--------------------\n1. Crear Cliente\n2. Listar Clientes\n3. Salir");
+                System.Console.WriteLine("------------------Sistema de Clientes--------------------");
+                System.Console.WriteLine("1. Crear Cliente\n2. Crear Empleado\n3. Listar Clientes\n4. Listar Empleados\n5. Salir");
                 
                 menu = int.Parse(Console.ReadLine()!);
-                Menu(menu,Listar);
+                Menu(menu,Listar,ListEmpleado);
                 Console.ReadLine();
                 Limpiar();
             }
@@ -23,11 +26,13 @@ namespace SistemaDeGestionClientes
 
         }
 
-        static void Menu(int entrada,Cliente Listar)
+        static void Menu(int entrada,Cliente Listar,Empleado employee)
         {
             string name = "";
             string cell = "";
             string email = "";
+            string Cargo = "";
+            decimal Salario = 0;
             
             switch (entrada)
             {
@@ -42,14 +47,32 @@ namespace SistemaDeGestionClientes
 
                     Console.WriteLine("Cliente Añadido");
                     break;
-                case 2:
+                case 3:
                     Console.WriteLine("----------Lista de Clientes-----------");
                     Listar.Listandocliente();
 
                     break;
-                case 3:
+                case 5:
                     Console.WriteLine("Saliendo del Programa");
                     return;
+                case 2:
+                    name = Indata("Ingrese Su Nombre");
+                    cell = Indata("Ingrese su Numero de Telefono");
+                    email = Indata("Ingrese su Correo");
+                    Cargo = Indata("Ingrese su Posicion");
+                    Salario = Indecimal("Ingrese su Sueldo");
+
+                    Empleado info = new (name,email,cell,Cargo,Salario);
+                    employee.AgregarEmpleado(info);
+
+                    Console.WriteLine("Empleado Añadido");
+
+                    break;
+                case 4:
+                    Console.WriteLine("----------Lista de Empleados-----------");
+                    employee.ListandoEmpleados();
+
+                    break;
                 default: 
                     Console.WriteLine("Valor no valido");
                     break;
@@ -65,7 +88,7 @@ namespace SistemaDeGestionClientes
             }
             catch(IOException)
             {
-                System.Console.WriteLine("[!] No se pudo limpiar la consola. Probablemente no hay consola disponible.");
+                Console.WriteLine("[!] No se pudo limpiar la consola. Probablemente no hay consola disponible.");
             }
         }
 
@@ -75,22 +98,31 @@ namespace SistemaDeGestionClientes
 
             return Console.ReadLine()!;
         }
+        static decimal Indecimal(string entrada)
+        {
+            System.Console.WriteLine(entrada);
+            return decimal.Parse(Console.ReadLine()!);
+        }
     }
     class Cliente : Persona
     {
 
-        private static List<Cliente> listclientes = [];
+        private readonly List<string> Compras = [];
+        private readonly List<Cliente> listclientes = [];
         public Cliente() : base ()
         {
-        
+
         }
 
-        public Cliente(string Nombre, string Email, string Telefono) : base (Nombre,Email,Telefono)
+        public Cliente(string Nombre, string Email, string Telefono) : base (Nombre, Email, Telefono)
         {
             
         }
 
-        
+        public void AgregarCompra(string Producto)
+        {
+            Compras.Add(Producto);
+        }
 
         public void Listandocliente()
         {
@@ -103,8 +135,61 @@ namespace SistemaDeGestionClientes
         {
             listclientes.Add(entrada);
         }
+
+        public override void ShowInfo()
+        {
+            Console.WriteLine($"Nombre: {Nombre}\nCorreo: {Email}\nTelefono: {Telefono}\n");
+
+            foreach(var mostrar in Compras)
+            {
+                System.Console.WriteLine(mostrar + "\n");
+            }
+        }
     
     }
+    class Empleado : Persona
+    {
+        private string Cargo;
+        private decimal Salario{get; set;}
+        private readonly List<Empleado> Stuff = [];
+
+        public Empleado() : base ()
+        {
+            Cargo = "";
+            Salario = 0;
+        }
+
+        public Empleado(string Nombre, string Email, string Telefono, string Cargo, decimal Salario) : base (Nombre, Email, Telefono)
+        {
+            this.Cargo = Cargo;
+            this.Salario = Salario;
+        }
+
+        public decimal CalcularSalarioAnual()
+        {
+            return Salario * 12;
+        }
+
+        public override void ShowInfo()
+        {
+            Console.WriteLine($"Nombre: {Nombre}\nCorreo: {Email}\nTelefono: {Telefono}");
+            Console.WriteLine($"Cargo: {Cargo}\nSalario: {Salario}\n");
+        }
+
+        public void AgregarEmpleado(Empleado empleado)
+        {
+            Stuff.Add(empleado);
+        }
+        public void ListandoEmpleados()
+        {
+            foreach(var salida in Stuff)
+            {
+                salida.ShowInfo();
+            }
+        }
+
+    }
+
     class Producto 
     {
         private string Nombre{get; set;}
@@ -147,6 +232,8 @@ namespace SistemaDeGestionClientes
             this.Telefono = Telefono;
         }
 
-        public void ShowInfo() => System.Console.WriteLine($"Nombre: {Nombre}\nCorreo: {Email}\nTelefono: {Telefono}\n");
+        public virtual void ShowInfo() => System.Console.WriteLine($"Nombre: {Nombre}\nCorreo: {Email}\nTelefono: {Telefono}\n");
     }
+
+
 }
