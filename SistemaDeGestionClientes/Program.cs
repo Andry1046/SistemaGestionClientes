@@ -76,29 +76,21 @@ namespace SistemaDeGestionClientes
             return Console.ReadLine()!;
         }
     }
-    class Cliente
+    class Cliente : Persona
     {
-        private string Nombre{get; set;}
-        private string Email {get; set;}
-        private string Telefono {get; set;}
 
         private static List<Cliente> listclientes = [];
-        public Cliente()
+        public Cliente() : base ()
         {
-            Nombre ="";
-            Email = "";
-            Telefono = "";
-       
+        
         }
 
-        public Cliente(string Nombre, string Email, string Telefono)
+        public Cliente(string Nombre, string Email, string Telefono) : base (Nombre,Email,Telefono)
         {
-            this.Nombre = Nombre;
-            this.Email = Email;
-            this.Telefono = Telefono;
+            
         }
 
-        public void ShowInfo() => System.Console.WriteLine($"Nombre: {Nombre}\nCorreo: {Email}\nTelefono: {Telefono}\n");
+        
 
         public void Listandocliente()
         {
@@ -133,5 +125,28 @@ namespace SistemaDeGestionClientes
             return valor > 0;
         }
 
+    }
+    class Persona
+    {
+        protected string Nombre{ get; set;}
+        protected string Email{ get; set; }
+        protected string Telefono {get; set;}
+
+
+        public Persona()
+        {
+            Nombre = "";
+            Email = "";
+            Telefono = "";
+        }
+
+        public Persona(string Nombre, string Email, string Telefono)
+        {
+            this.Nombre = Nombre;
+            this.Email = Email;
+            this.Telefono = Telefono;
+        }
+
+        public void ShowInfo() => System.Console.WriteLine($"Nombre: {Nombre}\nCorreo: {Email}\nTelefono: {Telefono}\n");
     }
 }
