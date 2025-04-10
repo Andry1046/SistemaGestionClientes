@@ -13,7 +13,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SistemaDeGestionClientes")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c882959e12a6ae554d3eba17d1d9c9faf811498a")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0f80d93f0578c983055364ecd9d00d59ae7ce283")]
+>>>>>>> feature/poo-basico
 [assembly: System.Reflection.AssemblyProductAttribute("SistemaDeGestionClientes")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SistemaDeGestionClientes")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
