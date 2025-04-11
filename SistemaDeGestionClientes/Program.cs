@@ -13,19 +13,23 @@ namespace SistemaDeGestionClientes
 
             while (menu != 5)
             {   
-                System.Console.WriteLine("------------------Sistema de Clientes--------------------");
-                System.Console.WriteLine("1. Crear Cliente\n2. Crear Empleado\n3. Listar Clientes\n4. Listar Empleados\n5. Salir");
+                ShowMenu();
                 
                 menu = int.Parse(Console.ReadLine()!);
                 Menu(menu,Listar,ListEmpleado);
-                Console.ReadLine();
+
                 Limpiar();
+
             }
-
-
 
         }
 
+
+        static void ShowMenu()
+        {
+            Console.WriteLine("------------------Sistema de Clientes--------------------");
+            Console.WriteLine("1. Crear Cliente\n2. Crear Empleado\n3. Listar Clientes\n4. Listar Empleados\n5. Salir");
+        }
         static void Menu(int entrada,Cliente Listar,Empleado employee)
         {
             string name = "";
@@ -33,6 +37,7 @@ namespace SistemaDeGestionClientes
             string email = "";
             string Cargo = "";
             decimal Salario = 0;
+            string Buy = "";
             
             switch (entrada)
             {
@@ -41,7 +46,9 @@ namespace SistemaDeGestionClientes
                     name = Indata("Ingrese su Nombre");
                     cell = Indata("Ingrese su Numero de Telefono");
                     email = Indata("Ingrese su Correo");
+                    Buy = Indata("Ingrese su Compra");
 
+                    Listar.AgregarCompra(Buy);
                     Cliente clientes = new(name,email,cell);
                     Listar.SaveClient(clientes);
 
@@ -82,26 +89,57 @@ namespace SistemaDeGestionClientes
 
         static void Limpiar()
         {
+            Console.WriteLine("Presione cualquier tecla para volver al menu principal");
+            
             try
             {
+                Console.ReadKey();
                 Console.Clear();
             }
             catch(IOException)
             {
                 Console.WriteLine("[!] No se pudo limpiar la consola. Probablemente no hay consola disponible.");
             }
+            catch(InvalidOperationException)
+            {
+                Console.WriteLine("[!] Consola No Disponible");
+            }
         }
-
         static string Indata(string entrada)
         {
-            Console.WriteLine(entrada);
+           string salida; 
 
-            return Console.ReadLine()!;
+            do{
+                Console.WriteLine(entrada);
+                salida = Console.ReadLine()!;
+
+                if(string.IsNullOrWhiteSpace(salida))
+                {
+                    Console.WriteLine("La entrada no puede estar vacia. Intenta Nuevamente");
+                }
+            }
+            while(string.IsNullOrWhiteSpace(salida));
+            return salida;
         }
         static decimal Indecimal(string entrada)
         {
-            System.Console.WriteLine(entrada);
-            return decimal.Parse(Console.ReadLine()!);
+            decimal salida;
+            Console.WriteLine(entrada);
+
+            string busqueda = Console.ReadLine()!;
+
+           do{
+             if(decimal.TryParse(busqueda, out salida))
+            {
+                return salida;
+            }
+            else
+            {
+                System.Console.WriteLine("La entrada debe de ser un numero valido.");
+            }
+           }while(true);
+            
+        
         }
     }
     class Cliente : Persona
@@ -109,6 +147,8 @@ namespace SistemaDeGestionClientes
 
         private readonly List<string> Compras = [];
         private readonly List<Cliente> listclientes = [];
+        private readonly List<Producto> Productos =[];
+
         public Cliente() : base ()
         {
 
@@ -130,6 +170,12 @@ namespace SistemaDeGestionClientes
             {
                 salida.ShowInfo();
             }
+
+            foreach(var mostrar in Compras)
+            {
+                Console.WriteLine(mostrar);
+            }
+
         }
         public void SaveClient(Cliente entrada)
         {
@@ -140,10 +186,6 @@ namespace SistemaDeGestionClientes
         {
             Console.WriteLine($"Nombre: {Nombre}\nCorreo: {Email}\nTelefono: {Telefono}\n");
 
-            foreach(var mostrar in Compras)
-            {
-                System.Console.WriteLine(mostrar + "\n");
-            }
         }
     
     }
@@ -194,16 +236,18 @@ namespace SistemaDeGestionClientes
     {
         private string Nombre{get; set;}
         private float Precio {get; set;}
+        private int Cantidad {get; set;}
 
         public Producto()
         {
 
             Nombre = "";
             Precio = 0;
+            Cantidad = 0;
 
         }
 
-        public void ShowInfo() => System.Console.WriteLine($"Nombre: {Nombre}\nPrecio: {Precio}");
+        public void ShowInfo() => System.Console.WriteLine($"Nombre: {Nombre}\nPrecio: {Precio}\nCantidad: {Cantidad}");
 
         public static bool Validar(float valor)
         {
