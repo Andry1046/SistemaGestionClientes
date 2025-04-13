@@ -1,4 +1,6 @@
-﻿using System.Threading.Channels;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading.Channels;
 
 namespace SistemaDeGestionClientes
 {
@@ -11,7 +13,7 @@ namespace SistemaDeGestionClientes
 
             int menu = 0;
 
-            while (menu != 5)
+            while (menu != 11)
             {   
                 ShowMenu();
                 
@@ -27,28 +29,23 @@ namespace SistemaDeGestionClientes
 
         static void ShowMenu()
         {
-            Console.WriteLine("------------------Sistema de Clientes--------------------");
-            Console.WriteLine("1. Crear Cliente\n2. Crear Empleado\n3. Listar Clientes\n4. Listar Empleados\n5. Salir");
+            Console.WriteLine("------------------Sistema de Gestion de Supermercado--------------------");
+            Console.WriteLine("1. Crear Cliente\n2. Crear Empleado\n3. Listar Clientes\n4. Listar Empleados");
+            Console.WriteLine("5.Agregar productos a un cliente\n6.Lista de productos del cliente\n7. Calcular salario Anual");
+            Console.WriteLine("8. Eliminar Cliente\n9. Eliminar Empleado");
+            Console.WriteLine("0.salir");
         }
         static void Menu(int entrada,Cliente Listar,Empleado employee)
         {
-            string name = "";
-            string cell = "";
-            string email = "";
-            string Cargo = "";
-            decimal Salario = 0;
-            string Buy = "";
             
             switch (entrada)
             {
                  
                 case 1:
-                    name = Indata("Ingrese su Nombre");
-                    cell = Indata("Ingrese su Numero de Telefono");
-                    email = Indata("Ingrese su Correo");
-                    Buy = Indata("Ingrese su Compra");
+                    string name = Indata("Ingrese su Nombre");
+                    string cell = Indata("Ingrese su Numero de Telefono");
+                    string email = Indata("Ingrese su Correo");
 
-                    Listar.AgregarCompra(Buy);
                     Cliente clientes = new(name,email,cell);
                     Listar.SaveClient(clientes);
 
@@ -59,15 +56,15 @@ namespace SistemaDeGestionClientes
                     Listar.Listandocliente();
 
                     break;
-                case 5:
+                case 11:
                     Console.WriteLine("Saliendo del Programa");
                     return;
                 case 2:
                     name = Indata("Ingrese Su Nombre");
                     cell = Indata("Ingrese su Numero de Telefono");
                     email = Indata("Ingrese su Correo");
-                    Cargo = Indata("Ingrese su Posicion");
-                    Salario = Indecimal("Ingrese su Sueldo");
+                    string Cargo = Indata("Ingrese su Posicion");
+                    decimal Salario = Indecimal("Ingrese su Sueldo");
 
                     Empleado info = new (name,email,cell,Cargo,Salario);
                     employee.AgregarEmpleado(info);
@@ -80,8 +77,85 @@ namespace SistemaDeGestionClientes
                     employee.ListandoEmpleados();
 
                     break;
-                default: 
-                    Console.WriteLine("Valor no valido");
+                case 5:
+
+                    string buscar = Indata("Escriba el Nombre del cliente");
+                    var existecliente = Listar.Listclientes.Any(c => c.Name == buscar);
+
+                    if(!existecliente) 
+                    {
+                        Console.WriteLine("Cliente No Existente\nVolviendo al menu Principal");
+                        break; //Saliendo del case 5
+                    }
+
+                    while(existecliente){
+                        Console.WriteLine("BIENVENIDO AL SISTEMA DE COMPRAS");
+                        
+                        var Encontrado = Listar.Listclientes.FirstOrDefault(c => c.Name == buscar);
+
+                        name = Indata("Ingrese el Nombre del producto");
+                        decimal Precio = Indecimal("Ingrese el precio del Producto");
+                        int Cantidad = decimal.ToInt32(Indecimal("Ingrese la cantidad del Producto"));
+
+                        var Product = new Producto(name,Precio,Cantidad);
+
+                        switch(Encontrado)
+                        {
+                            case not null:
+                            Listar.AgregarCompra(Product, Encontrado);
+                            Console.WriteLine("Compra Guardada");
+                            break;
+
+                            default:
+                            Console.WriteLine("Cliente no existente.");
+                            break;
+                        }
+                        
+                        string comprando = Indata("Selecione la opcion:\n1: Continuar Comprando\n2.Salir del Sistema");
+                        switch(comprando)
+                        {
+                            case "1":
+                            Limpiar();
+                            break;
+
+                            case "2":
+                            existecliente = false;
+                            break;
+
+                            default:
+                            Console.WriteLine("[!] Ingrese una opcion valida");
+                            break;
+                        }
+
+                    }
+                    break; //saliendo del case 5
+
+                    case 6:
+                        name = Indata("Escriba el nombre del cliente");
+                        Listar.ListandoProductos(name);
+                    break;
+
+                    case 7:
+                        name = Indata("Ingrese el Nombre del Empleado");
+                        employee.CalcularSalarioAnual(name);
+                    break;  
+
+                    case 8:
+                        name = Indata("Ingrese el Cliente a Eliminar");
+                        Listar.Listclientes.RemoveAll(c => c.Name == name);
+
+                        Console.WriteLine("Cliente Eliminado");
+                    break;
+
+                    case 9:
+                        name = Indata("Ingrese el Empleado a Eliminar");
+                        employee.Empleados.RemoveAll(c => c.Name == name);
+
+                        Console.WriteLine("Empleado Eliminado");
+                    break;
+
+                    default: 
+                        Console.WriteLine("Valor no valido");
                     break;
 
             }
@@ -145,41 +219,61 @@ namespace SistemaDeGestionClientes
     class Cliente : Persona
     {
 
-        private readonly List<string> Compras = [];
-        private readonly List<Cliente> listclientes = [];
-        private readonly List<Producto> Productos =[];
+        public List<Cliente> Listclientes {get; private set;} = [];
+        private readonly List<Producto> Productos;
+
+        public string Name{get; private set;}
 
         public Cliente() : base ()
         {
-
+            Productos = [];
+            Name = "";
         }
 
         public Cliente(string Nombre, string Email, string Telefono) : base (Nombre, Email, Telefono)
         {
-            
+            Productos = [];
+            Name = Nombre;
         }
+        
 
-        public void AgregarCompra(string Producto)
+        public void AgregarCompra(Producto producto,Cliente cliente)
         {
-            Compras.Add(Producto);
+            cliente.Productos.Add(producto);
+            
         }
 
         public void Listandocliente()
         {
-            foreach(var salida in listclientes)
+            foreach(var salida in Listclientes)
             {
                 salida.ShowInfo();
             }
 
-            foreach(var mostrar in Compras)
-            {
-                Console.WriteLine(mostrar);
-            }
+            
 
+        }
+        public void ListandoProductos(string name)
+        {
+            var EncontrarCliente = Listclientes.FirstOrDefault(c => c.Name == name);
+
+            if(EncontrarCliente != null)
+            {
+                var MostrarP= EncontrarCliente.Productos;
+
+                foreach(var imprimir in MostrarP)
+                {
+                    imprimir.ShowInfo();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Cliente No Encontrado/Existente");
+            }
         }
         public void SaveClient(Cliente entrada)
         {
-            listclientes.Add(entrada);
+            Listclientes.Add(entrada);
         }
 
         public override void ShowInfo()
@@ -193,23 +287,41 @@ namespace SistemaDeGestionClientes
     {
         private string Cargo;
         private decimal Salario{get; set;}
-        private readonly List<Empleado> Stuff = [];
+        public List<Empleado> Empleados {get; private set;} = [];
+        public string Name{get; private set;}
 
         public Empleado() : base ()
         {
             Cargo = "";
             Salario = 0;
+            Name = "";
         }
 
         public Empleado(string Nombre, string Email, string Telefono, string Cargo, decimal Salario) : base (Nombre, Email, Telefono)
         {
             this.Cargo = Cargo;
             this.Salario = Salario;
+            Name = Nombre;
         }
 
-        public decimal CalcularSalarioAnual()
+        public decimal CalcularSalarioAnual(string name)
         {
-            return Salario * 12;
+            
+            var buscarempleado = Empleados.FirstOrDefault(c => c.Name == name);
+            decimal salarioanual = 0;
+            switch(buscarempleado)
+            {
+                case not null:
+                salarioanual = buscarempleado.Salario * 12;
+
+                Console.WriteLine($"El salario Anual del empleado {name} es: {salarioanual}");
+                return salarioanual;
+
+                default:
+                    Console.WriteLine("[!] Empleado No Encontrado/Existente");
+                return salarioanual;
+
+            }
         }
 
         public override void ShowInfo()
@@ -220,11 +332,11 @@ namespace SistemaDeGestionClientes
 
         public void AgregarEmpleado(Empleado empleado)
         {
-            Stuff.Add(empleado);
+            Empleados.Add(empleado);
         }
         public void ListandoEmpleados()
         {
-            foreach(var salida in Stuff)
+            foreach(var salida in Empleados)
             {
                 salida.ShowInfo();
             }
@@ -235,7 +347,7 @@ namespace SistemaDeGestionClientes
     class Producto 
     {
         private string Nombre{get; set;}
-        private float Precio {get; set;}
+        private decimal Precio {get; set;}
         private int Cantidad {get; set;}
 
         public Producto()
@@ -246,8 +358,14 @@ namespace SistemaDeGestionClientes
             Cantidad = 0;
 
         }
+        public Producto(string Nombre, decimal Precio, int Cantidad)
+        {
+            this.Nombre = Nombre;
+            this.Precio = Precio;
+            this.Cantidad = Cantidad;
+        }
 
-        public void ShowInfo() => System.Console.WriteLine($"Nombre: {Nombre}\nPrecio: {Precio}\nCantidad: {Cantidad}");
+        public void ShowInfo() => Console.WriteLine($"Nombre: {Nombre}\nPrecio: {Precio}\nCantidad: {Cantidad}");
 
         public static bool Validar(float valor)
         {
