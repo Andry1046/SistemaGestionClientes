@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Threading.Channels;
 
 namespace SistemaDeGestionClientes
@@ -8,18 +10,46 @@ namespace SistemaDeGestionClientes
     {
         static void Main(string[] args)
         {
-            var Listar = new Cliente();
-            var ListEmpleado = new Empleado();
+            var Usuario = new Cliente();
+            var empleado = new Empleado();
 
             int menu = 0;
 
-            while (menu != 11)
+            while (menu != 4)
             {   
                 ShowMenu();
                 
-                menu = int.Parse(Console.ReadLine()!);
-                Menu(menu,Listar,ListEmpleado);
+                menu = InNumero();
+                switch(menu)
+                {
 
+                    case 1:
+                    Limpiar();
+                    MenuCliente();
+                    menu = InNumero();
+                    MenuCliente(menu,Usuario);
+                    break;
+
+                    case 2:
+                    Limpiar();
+                    MenuEmpleado();
+                    menu = InNumero();
+                    MenuEmpleado(menu,empleado);
+                    break;
+
+                    case 3:
+                    Limpiar();
+                    MenuInventario();
+                    break;
+
+                    case 4:
+                    Console.WriteLine("Saliendo del Programa");
+                    return;
+
+                    default:
+                    Console.WriteLine("[!] Numero Invalido");
+                    break;
+                }
                 Limpiar();
 
             }
@@ -30,57 +60,49 @@ namespace SistemaDeGestionClientes
         static void ShowMenu()
         {
             Console.WriteLine("------------------Sistema de Gestion de Supermercado--------------------");
-            Console.WriteLine("1. Crear Cliente\n2. Crear Empleado\n3. Listar Clientes\n4. Listar Empleados");
-            Console.WriteLine("5.Agregar productos a un cliente\n6.Lista de productos del cliente\n7. Calcular salario Anual");
-            Console.WriteLine("8. Eliminar Cliente\n9. Eliminar Empleado");
-            Console.WriteLine("0.salir");
+            Console.WriteLine("1.Clientes\n2.Empleados\n3.Inventario\n4.Salir");
         }
-        static void Menu(int entrada,Cliente Listar,Empleado employee)
+        static void MenuCliente()
         {
-            
-            switch (entrada)
+            Console.WriteLine("------------------Sistema de Clientes--------------------");
+            Console.WriteLine("1.Crear Clinete\n2.Listar Cliente\n3.Comprar Producto\n4.Ver Compras\n5.Eliminar Cliente\n6.Salir");
+        }
+        static void MenuEmpleado() 
+        {
+            Console.WriteLine("------------------Sistema de Empleados--------------------");
+            Console.WriteLine("1.Crear Empleado\n2.Listar Empleado\n3.Eliminar Empleado\n4.Calcular Salario Anual\n5.Salir");
+        }
+        static void MenuInventario()
+        {
+            Console.WriteLine("------------------INVENTARIO--------------------");
+            Console.WriteLine("1.Agregar Productos\n2.Listar productos\n3.Salir");
+        }
+
+        static void MenuCliente(int entrada, Cliente Consumidor) 
+        {
+            switch(entrada)
             {
-                 
                 case 1:
                     string name = Indata("Ingrese su Nombre");
                     string cell = Indata("Ingrese su Numero de Telefono");
                     string email = Indata("Ingrese su Correo");
 
                     Cliente clientes = new(name,email,cell);
-                    Listar.SaveClient(clientes);
+                    Consumidor.SaveClient(clientes);
 
                     Console.WriteLine("Cliente Añadido");
                     break;
-                case 3:
-                    Console.WriteLine("----------Lista de Clientes-----------");
-                    Listar.Listandocliente();
 
-                    break;
-                case 11:
-                    Console.WriteLine("Saliendo del Programa");
-                    return;
                 case 2:
-                    name = Indata("Ingrese Su Nombre");
-                    cell = Indata("Ingrese su Numero de Telefono");
-                    email = Indata("Ingrese su Correo");
-                    string Cargo = Indata("Ingrese su Posicion");
-                    decimal Salario = Indecimal("Ingrese su Sueldo");
-
-                    Empleado info = new (name,email,cell,Cargo,Salario);
-                    employee.AgregarEmpleado(info);
-
-                    Console.WriteLine("Empleado Añadido");
+                    Console.WriteLine("----------Lista de Clientes-----------");
+                    Consumidor.Listandocliente();
 
                     break;
-                case 4:
-                    Console.WriteLine("----------Lista de Empleados-----------");
-                    employee.ListandoEmpleados();
 
-                    break;
-                case 5:
+                case 3:
 
                     string buscar = Indata("Escriba el Nombre del cliente");
-                    var existecliente = Listar.Listclientes.Any(c => c.Name == buscar);
+                    var existecliente = Consumidor.Listclientes.Any(c => c.Name == buscar);
 
                     if(!existecliente) 
                     {
@@ -91,7 +113,7 @@ namespace SistemaDeGestionClientes
                     while(existecliente){
                         Console.WriteLine("BIENVENIDO AL SISTEMA DE COMPRAS");
                         
-                        var Encontrado = Listar.Listclientes.FirstOrDefault(c => c.Name == buscar);
+                        var Encontrado = Consumidor.Listclientes.FirstOrDefault(c => c.Name == buscar);
 
                         name = Indata("Ingrese el Nombre del producto");
                         decimal Precio = Indecimal("Ingrese el precio del Producto");
@@ -102,7 +124,7 @@ namespace SistemaDeGestionClientes
                         switch(Encontrado)
                         {
                             case not null:
-                            Listar.AgregarCompra(Product, Encontrado);
+                            Consumidor.AgregarCompra(Product, Encontrado);
                             Console.WriteLine("Compra Guardada");
                             break;
 
@@ -111,7 +133,7 @@ namespace SistemaDeGestionClientes
                             break;
                         }
                         
-                        string comprando = Indata("Selecione la opcion:\n1: Continuar Comprando\n2.Salir del Sistema");
+                        string comprando = Indata("Selecione la opcion:\n1.Continuar Comprando\n2.Salir del Sistema");
                         switch(comprando)
                         {
                             case "1":
@@ -128,31 +150,68 @@ namespace SistemaDeGestionClientes
                         }
 
                     }
-                    break; //saliendo del case 5
+                    break; //saliendo del case 5        
 
-                    case 6:
-                        name = Indata("Escriba el nombre del cliente");
-                        Listar.ListandoProductos(name);
+                case 4:
+                    name = Indata("Escriba el nombre del cliente");
+                    Consumidor.ListandoProductos(name);
+                    break;
+                
+                case 5:
+                    name = Indata("Ingrese el Cliente a Eliminar");
+                    Consumidor.Listclientes.RemoveAll(c => c.Name == name);
+
+                    Console.WriteLine("Cliente Eliminado");
                     break;
 
-                    case 7:
-                        name = Indata("Ingrese el Nombre del Empleado");
-                        employee.CalcularSalarioAnual(name);
-                    break;  
+                case 6:
+                    Console.WriteLine("Saliendo del Programa");
+                return;
 
-                    case 8:
-                        name = Indata("Ingrese el Cliente a Eliminar");
-                        Listar.Listclientes.RemoveAll(c => c.Name == name);
+                default: 
+                    Console.WriteLine("Valor no valido");
+                    break;
+            }
+        }
+        static void MenuEmpleado(int entrada,Empleado employee)
+        {
+            
+            switch (entrada)
+            {
+                 
+                case 5:
+                    Console.WriteLine("Saliendo del Programa");
+                return;
+                case 1:
+                    string name = Indata("Ingrese Su Nombre");
+                    string cell = Indata("Ingrese su Numero de Telefono");
+                    string email = Indata("Ingrese su Correo");
+                    string Cargo = Indata("Ingrese su Posicion");
+                    decimal Salario = Indecimal("Ingrese su Sueldo");
 
-                        Console.WriteLine("Cliente Eliminado");
+                    Empleado info = new (name,email,cell,Cargo,Salario);
+                    employee.AgregarEmpleado(info);
+
+                    Console.WriteLine("Empleado Añadido");
+
+                    break;
+                case 2:
+                    Console.WriteLine("----------Lista de Empleados-----------");
+                    employee.ListandoEmpleados();
+
                     break;
 
-                    case 9:
+                    case 3:
                         name = Indata("Ingrese el Empleado a Eliminar");
                         employee.Empleados.RemoveAll(c => c.Name == name);
 
                         Console.WriteLine("Empleado Eliminado");
-                    break;
+                        break;
+
+                    case 4:
+                        name = Indata("Ingrese el Nombre del Empleado");
+                        employee.CalcularSalarioAnual(name);
+                        break;  
 
                     default: 
                         Console.WriteLine("Valor no valido");
@@ -163,11 +222,9 @@ namespace SistemaDeGestionClientes
 
         static void Limpiar()
         {
-            Console.WriteLine("Presione cualquier tecla para volver al menu principal");
             
             try
             {
-                Console.ReadKey();
                 Console.Clear();
             }
             catch(IOException)
@@ -197,23 +254,37 @@ namespace SistemaDeGestionClientes
         }
         static decimal Indecimal(string entrada)
         {
-            decimal salida;
-            Console.WriteLine(entrada);
-
-            string busqueda = Console.ReadLine()!;
+            string busqueda = Indata(entrada);
 
            do{
-             if(decimal.TryParse(busqueda, out salida))
+             if(decimal.TryParse(busqueda, out decimal salida))
             {
                 return salida;
             }
             else
             {
-                System.Console.WriteLine("La entrada debe de ser un numero valido.");
+                Console.WriteLine("La entrada debe de ser un numero valido.");
             }
            }while(true);
             
         
+        }
+        static int InNumero()
+        {
+            string entrada = Indata("\nSeleccione una opcion");
+
+            do{
+                if(int.TryParse(entrada, out int salida))
+                {
+                    return salida;
+                }
+                else
+                {
+                    Console.WriteLine("[!] Numero No valido");
+                }
+
+            }while(true);
+
         }
     }
     class Cliente : Persona
